@@ -55,10 +55,18 @@ def main(args):
     cuisine_predicted=lr_m.predict(df_test)
 
     if args.N != NONE:
+
+        
+        # Adding similarity score column to the dtaa frame.
+        similarity_score_ingredients=[]
+        for i in df['ingredients']:
+            similarity_score_ingredients.append(jaccardSimilarity(input_data[0],i))
+        df['similarity_score']=similarity_score_ingredients
         # identyifying the topN recipies matches the recipies given. 
-        n=topn(df,input_data)
+        n_value=args.N
+        n=topn(df,n_value)
+        # identifying the score for the predicted cusine
         cuisines=df.groupby('cuisine')
-        # identifying the score for tge predicted cusine
         predicted_cuisine_list=cuisines.get_group(cuisine_predicted[0])
         score_predicted=len([ x for x in list(predicted_cuisine_list['similarity_score']>0) if x==True])/predicted_cuisine_list['cuisine'].count()
     # grouping the topN recipies in a list.
@@ -110,7 +118,7 @@ def jaccardSimilarity(Sentence1, Sentence2):
     Similarity = float(len(c))/(len(a)+len(b)-len(c))
     return Similarity
 
-def topn(df,input_data):
+def topn(df,n_value):
     '''
     This funtion clean the text data in a list.
     Parameters
@@ -122,11 +130,8 @@ def topn(df,input_data):
     -------
             cleaned string that contains ingredients.
     '''
-    similarity_score_ingredients=[]
-    for i in df['ingredients']:
-        similarity_score_ingredients.append(jaccardSimilarity(input_data[0],i))
-    df['similarity_score']=similarity_score_ingredients
-    sorted_score=df.sort_values('similarity_score',ascending=False)[:args.N]
+
+    sorted_score=df.sort_values('similarity_score',ascending=False)[:n_value]
     id=list(sorted_score['id'])
     scores=list(sorted_score['similarity_score'])
     id_score=list(zip(id,scores))
