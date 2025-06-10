@@ -1,7 +1,4 @@
 import json
-from pickle import NONE
-from tkinter import N
-import numpy as np
 import pandas as pd
 import re
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -54,7 +51,7 @@ def main(args):
     #predicting the type of cuisine using saved model.
     cuisine_predicted=lr_m.predict(df_test)
 
-    if args.N != NONE:
+    if args.N is not None:
 
         
         # Adding similarity score column to the dtaa frame.
